@@ -14,7 +14,9 @@ export default function RootLayout({ children }) {
 
   return (
     <html lang="en">
-      <body className={`${inter.className} bg-gray-50 min-h-screen overflow-x-hidden`}>
+      <body
+        className={`${inter.className} bg-gray-50 min-h-screen overflow-x-hidden`}
+      >
         <div className="flex min-h-screen">
           {/* Sidebar */}
           <Sidebar
@@ -23,7 +25,7 @@ export default function RootLayout({ children }) {
           />
 
           {/* Content wrapper */}
-          <div className="flex-1 flex flex-col min-w-0">
+          <div className="flex-1 flex flex-col min-w-0 md:ml-64">
             {/* Topbar */}
             <Topbar onMenuClick={() => setIsSidebarOpen(true)} />
 
