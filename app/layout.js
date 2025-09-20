@@ -1,23 +1,37 @@
+// app/layout.jsx
+"use client";
+
 import "./globals.css";
+import { Inter } from "next/font/google";
+import { useState } from "react";
 import Sidebar from "./components/Sidebar";
 import Topbar from "./components/Topbar";
 
-export const metadata = {
-  title: "AI-Bot Admin",
-  description: "Admin Panel for Flask API",
-};
+const inter = Inter({ subsets: ["latin"] });
 
 export default function RootLayout({ children }) {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
   return (
     <html lang="en">
-      <body className="flex min-h-screen bg-gray-100">
-        {/* Sidebar */}
-        <Sidebar />
+      <body className={`${inter.className} bg-gray-50 min-h-screen overflow-x-hidden`}>
+        <div className="flex min-h-screen">
+          {/* Sidebar */}
+          <Sidebar
+            isOpen={isSidebarOpen}
+            onClose={() => setIsSidebarOpen(false)}
+          />
 
-        {/* Main content area */}
-        <div className="flex-1 flex flex-col">
-          <Topbar />
-          <main className="p-6 overflow-y-auto">{children}</main>
+          {/* Content wrapper */}
+          <div className="flex-1 flex flex-col min-w-0">
+            {/* Topbar */}
+            <Topbar onMenuClick={() => setIsSidebarOpen(true)} />
+
+            {/* Page body */}
+            <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto min-w-0">
+              {children}
+            </main>
+          </div>
         </div>
       </body>
     </html>
