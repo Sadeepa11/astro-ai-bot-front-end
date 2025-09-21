@@ -22,7 +22,7 @@ export default function CitiesPage() {
     fetchCities();
   }, []);
 
-  const API_BASE = "http://127.0.0.1:5000";
+ const API_BASE = "http://192.168.61.154:5000";
 
   const fetchCities = async () => {
     try {

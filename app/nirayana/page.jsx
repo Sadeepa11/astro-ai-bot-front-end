@@ -17,51 +17,83 @@ export default function NirayanaPage() {
     Checked: "",
   });
 
-  const API_BASE = "http://127.0.0.1:5000";
+  // Change 127.0.0.1 to your PC's LAN IP if accessing from another device
+const API_BASE = "http://192.168.61.154:5000";
 
+  // Fetch all records
   useEffect(() => {
     fetchAll();
   }, []);
 
   const fetchAll = async () => {
+  try {
     const res = await fetch(`${API_BASE}/nirayana`);
+    if (!res.ok) {
+      throw new Error(`HTTP error! Status: ${res.status}`);
+    }
     const data = await res.json();
     setNirayanas(data);
-  };
+  } catch (err) {
+    console.error("Failed to fetch Nirayana data:", err);
+  }
+};
 
   const fetchByUID = async () => {
     if (!searchUid) return;
-    const res = await fetch(`${API_BASE}/nirayana/uid/${searchUid}`);
-    if (res.ok) {
-      const data = await res.json();
-      setNirayanas([data]);
+    try {
+      const res = await fetch(`${API_BASE}/nirayana/uid/${searchUid}`);
+      if (res.ok) {
+        const data = await res.json();
+        setNirayanas([data]);
+      } else {
+        console.error("No record found with UID");
+      }
+    } catch (err) {
+      console.error(err);
     }
   };
 
   const fetchByTime = async () => {
     if (!searchHours || !searchMinutes) return;
-    const res = await fetch(
-      `${API_BASE}/nirayana/time/${searchHours}/${searchMinutes}`
-    );
-    const data = await res.json();
-    setNirayanas(data);
+    try {
+      const res = await fetch(
+        `${API_BASE}/nirayana/time/${searchHours}/${searchMinutes}`
+      );
+      const data = await res.json();
+      setNirayanas(data);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const addNirayana = async () => {
-    const res = await fetch(`${API_BASE}/nirayana`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(newNirayana),
-    });
-    if (res.ok) {
-      fetchAll();
-      setNewNirayana({
-        Hours: "",
-        Minutes: "",
-        Makara: "",
-        Balance: "",
-        Checked: "",
+    if (!newNirayana.Hours || !newNirayana.Minutes) {
+      alert("Hours and Minutes are required");
+      return;
+    }
+
+    const body = {
+      ...newNirayana,
+      Hours: Number(newNirayana.Hours),
+      Minutes: Number(newNirayana.Minutes),
+    };
+
+    try {
+      const res = await fetch(`${API_BASE}/nirayana`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
       });
+
+      if (res.ok) {
+        fetchAll();
+        setNewNirayana({ Hours: "", Minutes: "", Makara: "", Balance: "", Checked: "" });
+      } else {
+        const err = await res.json();
+        console.error("Error adding Nirayana:", err);
+      }
+    } catch (err) {
+      console.error("Failed to add Nirayana record:", err);
     }
   };
 
@@ -76,13 +108,10 @@ export default function NirayanaPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-6 space-y-8 overflow-x-hidden">
-      <h1 className="text-3xl font-bold text-center text-blue-600">
-        Nirayana Records
-      </h1>
+      <h1 className="text-3xl font-bold text-center text-blue-600">Nirayana Records</h1>
 
       {/* Search Section */}
       <div className="grid md:grid-cols-2 gap-6">
-        {/* Search by UID */}
         <div className="bg-white p-6 rounded-xl shadow-md border">
           <h2 className="text-lg font-semibold mb-3 text-gray-700">Search by UID</h2>
           <div className="flex flex-col sm:flex-row gap-3 w-full">
@@ -102,7 +131,6 @@ export default function NirayanaPage() {
           </div>
         </div>
 
-        {/* Search by Time */}
         <div className="bg-white p-6 rounded-xl shadow-md border">
           <h2 className="text-lg font-semibold mb-3 text-gray-700">Search by Time</h2>
           <div className="flex flex-col sm:flex-row gap-3 w-full">
