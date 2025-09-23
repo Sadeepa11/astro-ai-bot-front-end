@@ -15,6 +15,7 @@ export default function CitiesPage() {
     North_Latitude: "",
     Stan_time: "",
     Checked: "",
+    Sunrise_def: "", // <-- added
   });
 
   // Load all cities initially
@@ -22,7 +23,7 @@ export default function CitiesPage() {
     fetchCities();
   }, []);
 
- const API_BASE = "http://192.168.61.154:5000";
+  const API_BASE = "http://135.181.210.47:5000";
 
   const fetchCities = async () => {
     try {
@@ -74,16 +75,21 @@ export default function CitiesPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newCity),
       });
-      if (res.ok) {
-        fetchCities();
-        setNewCity({
-          CityName: "",
-          East_Longitude: "",
-          North_Latitude: "",
-          Stan_time: "",
-          Checked: "",
-        });
+      const data = await res.json();
+      if (!res.ok) {
+        console.error("Error adding city:", data);
+        alert(data?.error || "Failed to create city");
+        return;
       }
+      await fetchCities();
+      setNewCity({
+        CityName: "",
+        East_Longitude: "",
+        North_Latitude: "",
+        Stan_time: "",
+        Checked: "",
+        Sunrise_def: "", // reset
+      });
     } catch (err) {
       console.error("Error adding city:", err);
     }
@@ -95,6 +101,7 @@ export default function CitiesPage() {
     { key: "North_Latitude", label: "North" },
     { key: "Stan_time", label: "Standard Time" },
     { key: "Checked", label: "Checked" },
+    { key: "Sunrise_def", label: "Sunrise" }, // keep key; nicer label
     { key: "UniqueUID", label: "UID" },
   ];
 
@@ -209,6 +216,13 @@ export default function CitiesPage() {
             placeholder="Checked"
             value={newCity.Checked}
             onChange={(e) => setNewCity({ ...newCity, Checked: e.target.value })}
+            className="border rounded px-3 py-2 focus:ring focus:ring-indigo-300 outline-none"
+          />
+          <input
+            type="time"
+            placeholder="Sunrise (HH:MM)"
+            value={newCity.Sunrise_def}
+            onChange={(e) => setNewCity({ ...newCity, Sunrise_def: e.target.value })}
             className="border rounded px-3 py-2 focus:ring focus:ring-indigo-300 outline-none"
           />
         </div>
