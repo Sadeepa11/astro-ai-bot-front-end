@@ -18,7 +18,7 @@ export default function NirayanaPage() {
   });
 
   // Change 127.0.0.1 to your PC's LAN IP if accessing from another device
-const API_BASE = "http://192.168.61.154:5000";
+const API_BASE = "https://135.181.210.47:5000";
 
   // Fetch all records
   useEffect(() => {
